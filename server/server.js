@@ -1,10 +1,15 @@
 const controller = require('./../database/controllers/controller.js');
+const bodyParser = require('body-parser'); 
 const express = require('express'); 
 const path = require('path'); 
 const app = express(); 
 
-app.use(express.static(path.join(__dirname, './../client')));
-app.get('/api', controller.displayAPI);   
+app.use(bodyParser.json()); 
+app.use(bodyParser.urlencoded({extended: true}));
+// app.use(express.static(path.join(__dirname, './../client'))); 
+
+app.get('/inventory', controller.displayAll); 
+app.get('/inventory/:id', controller.getSingleItem);
 // app.get('/readIventory', controller.readInventory); //This request loaded inventory into database. 
 // app.get('/readProducts', controller.readProducts); //This request loaded products into database. 
 

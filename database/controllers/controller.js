@@ -1,6 +1,5 @@
 const db = require('./../models/database.js'); 
 const $ = jQuery = require('jquery'); 
-const parse = require('csv-parse'); 
 const fs = require('file-system'); 
 const path = require('path'); 
 $.csv = require('jquery-csv'); 
@@ -57,15 +56,29 @@ controller.readProducts = (req, res) => {
   });
 }
 
-controller.displayAPI = (req, res) => { 
+controller.displayAll = (req, res) => { 
   db.tx(t => {
-      return t.any('SELECT product_id, waist, length, style, count FROM inventory')
+      return t.any('SELECT primary_key, product_id, waist, length, style, count FROM inventory')
     .then((data) => { 
-      res.send(data); 
+      res.json(data); 
     }).catch((error) => {
-      console.log('Error!', error);
+      res.send(error);
     });
   });
+}
+
+controller.getSingleItem = (req, res) => { 
+  var inventoryID = parseInt(req.params.id);
+  db.one('SELECT * FROM inventory where primary_key = $1', inventoryID)
+    .then((data) => {
+      res.json(data)
+    }).catch((err) => {
+      res.send(err);
+    });
+}
+
+controller.createItem = (req, res, next) => { 
+ 
 }
 
 module.exports = controller; 
