@@ -3,7 +3,8 @@ const express = require('express');
 const path = require('path'); 
 const app = express(); 
 
-app.use(express.static(path.join(__dirname, './../client')));  
+app.use(express.static(path.join(__dirname, './../client')));
+app.get('/api', controller.displayAPI);   
 // app.get('/readIventory', controller.readInventory); //This request loaded inventory into database. 
 // app.get('/readProducts', controller.readProducts); //This request loaded products into database. 
 

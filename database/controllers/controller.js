@@ -7,10 +7,6 @@ $.csv = require('jquery-csv');
 
 const controller = {};
 
-controller.display = () => { 
-  
-}
-
 const inventory = path.join(__dirname, './../../inventory_data/inventory.csv'); 
 controller.readInventory = (req, res) => {
   fs.readFile(inventory, 'UTF-8', function(err, fileData) {
@@ -61,8 +57,15 @@ controller.readProducts = (req, res) => {
   });
 }
 
-controller.getInventory = (req, res) => { 
-  console.log('Inside of get Inventory'); 
+controller.displayAPI = (req, res) => { 
+  db.tx(t => {
+      return t.any('SELECT product_id, waist, length, style, count FROM inventory')
+    .then((data) => { 
+      res.send(data); 
+    }).catch((error) => {
+      console.log('Error!', error);
+    });
+  });
 }
 
 module.exports = controller; 
