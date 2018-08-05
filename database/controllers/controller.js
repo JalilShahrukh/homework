@@ -15,34 +15,50 @@ const inventory = path.join(__dirname, './../../inventory_data/inventory.csv');
 controller.readInventory = (req, res) => {
   fs.readFile(inventory, 'UTF-8', function(err, fileData) {
     $.csv.toObjects(fileData, {}, function(err, data) { 
-      console.log(data); 
-    //   let keys = Object.keys(data[0]); 
-    //   for (let i = 0; i < keys.length; i++) { 
-    //     console.log(keys[i].trim()); 
-    //   }//end for
+      //console.log(data); 
 
       db.tx(t => { 
-        console.log('Inside of transaction.'); 
+        console.log('Inside of iventory transaction.'); 
         var queries = data.map(i => {  
-          console.log(i.product_id); 
-          return t.none(`INSERT INTO iventory(product_id, waist, length, style, count) VALUES(${i.product_id.trim()}, ${i.waist.trim()}, ${i.length.trim()}, ${i.style.trim()}, ${i.count.trim()})`, i);
+          var style = `'` + (`${i[" style"].trim()}`) + `'`;
+          //The keys stored in the objects have additional spaces in front of them.
+          return t.none(`INSERT INTO inventory(product_id, waist, length, style, count) VALUES(${i.product_id}, ${i[" waist"].trim()}, ${i[" length"].trim()}, ${style}, ${i[" count"].trim()})`, i);
         }); 
         return t.batch(queries);
-      }).then((data) => {
-        // success
-        res.send(data); 
+      }).then(() => {
+        console.log('Success!');  
       }).catch(error => {
-        // error;
         console.log(error); 
-      });//end transaction
+      });
 
-    });//end toObjects
-  });//end readFile 
+    });
+  });
 }
 
 const products = path.join(__dirname, './../../inventory_data/products.csv'); 
-controller.readProducts = () => {
+controller.readProducts = (req, res) => {
+  fs.readFile(products, 'UTF-8', function(err, fileData) {
+    $.csv.toObjects(fileData, {}, function(err, data) { 
+      console.log(data); 
 
+      db.tx(t => { 
+        console.log('Inside of product transaction.'); 
+        var queries = data.map(i => {  
+          var name = `'` + (`${i.product_name.trim()}`) + `'`;
+          var image = `'` + (`${i.product_image.trim()}`) + `'`;
+          var product = `'` + (`${i.product_description.trim()}`) + `'`;
+        
+          return t.none(`INSERT INTO products(product_id, product_name, product_image, product_description) VALUES(${i.product_id}, ${name}, ${image}, ${product})`, i);
+        }); 
+        return t.batch(queries);
+      }).then(() => {
+        console.log('Success!'); 
+      }).catch(error => {
+        console.log(error); 
+      });
+
+    });
+  });
 }
 
 controller.getInventory = (req, res) => { 
