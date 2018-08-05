@@ -10,6 +10,9 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.get('/inventory', controller.displayAll); 
 app.get('/inventory/:id', controller.getSingleItem);
+app.post('/inventory', controller.createItem); 
+app.put('/inventory/:id', controller.updateItem); 
+app.delete('/iventory/:id', controller.removeItem); 
 // app.get('/readIventory', controller.readInventory); //This request loaded inventory into database. 
 // app.get('/readProducts', controller.readProducts); //This request loaded products into database. 
 

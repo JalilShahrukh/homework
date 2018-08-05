@@ -68,17 +68,51 @@ controller.displayAll = (req, res) => {
 }
 
 controller.getSingleItem = (req, res) => { 
-  var inventoryID = parseInt(req.params.id);
+  var inventoryID = req.params.id;
   db.one('SELECT * FROM inventory where primary_key = $1', inventoryID)
     .then((data) => {
       res.json(data)
-    }).catch((err) => {
-      res.send(err);
+    }).catch((error) => {
+      res.send(error);
     });
 }
 
-controller.createItem = (req, res, next) => { 
- 
+controller.createItem = (req, res) => { 
+  db.none(`INSERT INTO inventory(product_id, waist, length, style, count) VALUES(${product_id}, ${waist}, ${length}, ${style}, ${count}`, req.body)
+    .then(() => {
+      res.json({
+        status: 'Success!',
+        message: 'Inserted one item.'
+      });
+    }).catch(function (error) {
+      res.send(error);
+    });
+}
+
+controller.updateItem = (req, res) => { 
+  db.none('UPDATE inventory SET product_id=$1, waist=$2, length=$3, style=$4 count=$5 WHERE primary_key=$5',
+    [req.body.product_id, req.body.waist, req.body.length, req.body.style, req.params.count, req.params.id])
+      .then(() => {
+        res.json({
+          status: 'Success!',
+          message: 'Updated item.'
+        });
+      }).catch((error) => {
+        res.send(error);
+      });
+}
+
+controller.removeItem = (req, res) => { 
+  var inventoryID = parseInt(req.params.id);
+  db.result('DELETE FROM inventory WHERE primary_key = $1', inventoryID)
+    .then((result) => {
+      res.json({
+        status: 'Success!',
+        message: `Removed ${result.rowCount} item.`
+      });
+    }).catch((error) => {
+      res.send(error); 
+    });
 }
 
 module.exports = controller; 
