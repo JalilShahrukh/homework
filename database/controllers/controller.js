@@ -78,7 +78,7 @@ controller.getSingleItem = (req, res) => {
 }
 
 controller.createItem = (req, res) => { 
-  db.none(`INSERT INTO inventory(product_id, waist, length, style, count) VALUES(${product_id}, ${waist}, ${length}, ${style}, ${count}`, req.body)
+  db.none(`INSERT INTO inventory(product_id, waist, length, style, count) VALUES(${req.body.product_id}, ${req.body.waist}, ${req.body.length}, ${req.body.style}, ${req.body.count})`)
     .then(() => {
       res.json({
         status: 'Success!',
@@ -89,9 +89,9 @@ controller.createItem = (req, res) => {
     });
 }
 
-controller.updateItem = (req, res) => { 
-  db.none('UPDATE inventory SET product_id=$1, waist=$2, length=$3, style=$4 count=$5 WHERE primary_key=$5',
-    [req.body.product_id, req.body.waist, req.body.length, req.body.style, req.params.count, req.params.id])
+controller.updateItem = (req, res) => {
+  var product_id = req.body.product_id, waist = req.body.waist, length = req.body.length, style = req.body.style, count = req.body.count, inventoryID = parseInt(req.params.id);
+  db.none(`UPDATE inventory SET product_id=${product_id}, waist=${waist}, length=${length}, style=${style}, count=${count} WHERE primary_key=${inventoryID}`)
       .then(() => {
         res.json({
           status: 'Success!',
@@ -104,7 +104,7 @@ controller.updateItem = (req, res) => {
 
 controller.removeItem = (req, res) => { 
   var inventoryID = parseInt(req.params.id);
-  db.result('DELETE FROM inventory WHERE primary_key = $1', inventoryID)
+  db.result(`DELETE FROM inventory WHERE primary_key=${inventoryID}`)
     .then((result) => {
       res.json({
         status: 'Success!',
